@@ -1,6 +1,6 @@
-# Holiday Planner AI
+# BackpackAI
 
-Aplikasi perencana liburan keluarga dengan tema Travel Agent yang menarik. Menggunakan algoritma BFS dan DFS untuk menemukan rute terbaik antar destinasi wisata.
+Aplikasi struktur data dan algoritma bertema artificial intelligence untuk pencarian rute antar kota. Di dalamnya terdapat konsep graph, implementasi BFS dan DFS, Big O notasi, searching, dan sorting.
 
 ## Arsitektur
 

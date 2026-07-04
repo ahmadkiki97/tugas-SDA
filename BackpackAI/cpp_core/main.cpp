@@ -19,16 +19,18 @@ using std::unordered_set;
 using std::vector;
 
 // ============================================================================
-// KELAS GRAPH - Implementasi Struktur Data Graph untuk Travel Planner AI
+// KELAS GRAPH - Implementasi Struktur Data Graph untuk tugas struktur data
 // ============================================================================
-// Konsep: Graph adalah struktur data yang terdiri dari vertex (kota) dan 
-// edge (jalur) yang menghubungkan kota-kota tersebut. Kami menggunakan 
-// Adjacency List untuk representasi yang efisien dalam hal ruang memori.
+// Konsep Graph:
+// - Vertex = kota
+// - Edge   = jalur antar kota
+// - Representasi adjacency list dipilih karena hemat memori dan efisien
+//   untuk graph yang tidak terlalu padat.
 // ============================================================================
 class Graph {
 private:
-  // Adjacency List: Map kota -> vektor kota tetangga
-  // Kompleksitas ruang: O(V + E) dimana V = jumlah vertex, E = jumlah edge
+  // Adjacency list menyimpan pasangan: kota -> daftar kota tetangga
+  // Kompleksitas ruang: O(V + E), V = vertex, E = edge
   unordered_map<string, vector<string>> adjacency_list;
   
   // Edge List: Menyimpan semua jalur untuk kemudahan visualisasi

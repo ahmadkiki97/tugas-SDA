@@ -1,0 +1,13 @@
+{
+  "name": "backpackai-local-host",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local host server for BackpackAI web frontend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
