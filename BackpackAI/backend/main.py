@@ -1,57 +1,60 @@
+# ============================================================================
+# BACKEND API - FastAPI Wrapper untuk C++ Graph DLL
+# ============================================================================
+# File ini berfungsi sebagai jembatan (bridge) antara frontend (web/mobile)
+# dengan logika C++ yang berisi implementasi algoritma graph, BFS, DFS, dan sorting.
+# 
+# Arsitektur:
+#   Frontend (HTTP) -> Python FastAPI (ctypes) -> C++ DLL (Graph Algorithms)
+# ============================================================================
+
 import os
 os.add_dll_directory(r"C:\msys64\ucrt64\bin")
-# Mengimpor modul FastAPI untuk membuat web server (API)
-# pyrefly: ignore [missing-import]
+
 from fastapi import FastAPI, HTTPException
-# Mengimpor modul ctypes untuk memanggil fungsi dari file DLL (Shared Library) C++
 import ctypes
-# Mengimpor modul os untuk melakukan operasi sistem file seperti mendapatkan jalur (path) yang benar
-import os
-# Mengimpor modul asyncio agar kita dapat menjalankan proses secara asynchronous (tidak memblokir server)
 import asyncio
-# Mengimpor CORSMiddleware dari FastAPI agar aplikasi Flutter dapat memanggil API ini tanpa terkena error CORS
 from fastapi.middleware.cors import CORSMiddleware
 
-# Membuat instansiasi dari aplikasi FastAPI
-app = FastAPI(title="BackpackAI Backend")
+# ============================================================================
+# KONFIGURASI APLIKASI FASTAPI
+# ============================================================================
 
-# Menambahkan middleware CORS ke dalam aplikasi FastAPI
+app = FastAPI(
+    title="BackpackAI Backend",
+    description="API untuk Travel Planner AI dengan algoritma Graph, BFS, DFS, Sorting, dan Searching",
+    version="1.0.0"
+)
+
 app.add_middleware(
     CORSMiddleware,
-    # Mengizinkan semua origin (domain/IP) untuk mengakses API (penting saat development lokal)
     allow_origins=["*"],
-    # Mengizinkan kredensial seperti cookies
     allow_credentials=True,
-    # Mengizinkan semua HTTP method (GET, POST, PUT, DELETE, dll)
     allow_methods=["*"],
-    # Mengizinkan semua headers
     allow_headers=["*"],
 )
 
-# Menentukan lokasi absolut dari file DLL hasil kompilasi C++
-# __file__ akan mengambil lokasi file main.py saat ini, lalu kita menggunakan os.path untuk menavigasi ke cpp_core
+# ============================================================================
+# MEMUAT LIBRARY C++ (DLL)
+# ============================================================================
 DLL_PATH = os.path.join(os.path.dirname(__file__), "..", "cpp_core", "core.dll")
 
-# Mencoba memuat file DLL C++ menggunakan block try-catch untuk error handling
-# Mencoba memuat file DLL C++ menggunakan block try-catch untuk error handling
 try:
-    # Memuat library C++ (DLL) ke dalam variabel cpp_library menggunakan ctypes.CDLL
-    # Ditambahkan winmode=0 agar Python 3.14 mau mencari file dependency di folder Windows & MSYS2
     cpp_library = ctypes.CDLL(DLL_PATH, winmode=0)
     
-    # Menentukan tipe kembalian (return type) dari fungsi cari_rute_wrapper di C++ yaitu C-string (c_char_p)
     cpp_library.cari_rute_wrapper.restype = ctypes.c_char_p
-    # Menentukan tipe parameter (argumen) dari fungsi cari_rute_wrapper di C++ yaitu 3 buah C-string (asal, tujuan, algo)
     cpp_library.cari_rute_wrapper.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     
-    # Menentukan tipe kembalian dari fungsi get_all_cities_sorted_wrapper di C++ yaitu C-string (c_char_p)
     cpp_library.get_all_cities_sorted_wrapper.restype = ctypes.c_char_p
-    # Menentukan tipe parameter dari fungsi get_all_cities_sorted_wrapper di C++ yaitu kosong (tanpa argumen)
     cpp_library.get_all_cities_sorted_wrapper.argtypes = []
+    
+    cpp_library.search_city_wrapper.restype = ctypes.c_char_p
+    cpp_library.search_city_wrapper.argtypes = [ctypes.c_char_p]
+    
+    cpp_library.big_o_wrapper.restype = ctypes.c_char_p
+    cpp_library.big_o_wrapper.argtypes = []
 except Exception as e:
-    # Jika gagal memuat DLL (misalnya file belum dicompile), cetak pesan error ke console
     print(f"Peringatan: Gagal memuat DLL C++ dari {DLL_PATH}. Error: {e}")
-    # Set nilai cpp_library ke None sebagai penanda bahwa library tidak tersedia
     cpp_library = None
 
 # Membuat endpoint API dengan HTTP GET pada alamat "/cari_rute"
@@ -115,5 +118,39 @@ async def dapatkan_kota():
             "cities": daftar_kota
         }
     except Exception as e:
-        # Jika terjadi error, kirim pesan error detail
         raise HTTPException(status_code=500, detail=f"Gagal mengambil daftar kota: {str(e)}")
+
+# ============================================================================
+# ENDPOINT SEARCHING KOTA
+# ============================================================================
+@app.get("/search")
+async def search_city(keyword: str):
+    if cpp_library is None:
+        raise HTTPException(status_code=500, detail="Library C++ (core.dll) tidak ditemukan.")
+    try:
+        hasil_bytes = await asyncio.to_thread(cpp_library.search_city_wrapper, keyword.encode('utf-8'))
+        hasil_teks = hasil_bytes.decode('utf-8')
+        return {"status": "success", "keyword": keyword, "hasil_pencarian": hasil_teks}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal mencari kota: {str(e)}")
+
+# ============================================================================
+# ENDPOINT BIG O NOTATION
+# ============================================================================
+@app.get("/bigo")
+async def get_big_o():
+    if cpp_library is None:
+        raise HTTPException(status_code=500, detail="Library C++ (core.dll) tidak ditemukan.")
+    try:
+        hasil_bytes = await asyncio.to_thread(cpp_library.big_o_wrapper)
+        hasil_teks = hasil_bytes.decode('utf-8')
+        return {"status": "success", "big_o_notation": hasil_teks}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal mengambil Big O: {str(e)}")
+
+# ============================================================================
+# MENJALANKAN SERVER
+# ============================================================================
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

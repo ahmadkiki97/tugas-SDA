@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BackpackAI - Travel Planner AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 10c0 6-8 12-10 12S0 16 20 10c0 0 4-2 4-6 0-4-4-6-8-6s-4 2-4 6 4 6 4 6"/>
+                    </svg>
+                    <span>BackpackAI</span>
+                </div>
+            </div>
+            <p class="tagline">Travel Planner AI with Graph Algorithms</p>
+        </header>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-title">Search Routes</div>
+                <div class="feature-desc">Find optimal routes using BFS or DFS</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📍</div>
+                <div class="feature-title">City Database</div>
+                <div class="feature-desc">Access all destination cities alphabetically</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Big-O Analysis</div>
+                <div class="feature-desc">Understand algorithm complexity</div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <div class="card-header">
+                <h2>Plan Your AI Travel</h2>
+                <p>Find your perfect route using intelligent graph algorithms</p>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Departure City</label>
+                    <select id="asal">
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Singapura">Singapura</option>
+                        <option value="Dubai">Dubai</option>
+                        <option value="Paris">Paris</option>
+                        <option value="Tokyo">Tokyo</option>
+                        <option value="Sydney">Sydney</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Destination City</label>
+                    <select id="tujuan">
+                        <option value="Tokyo">Tokyo</option>
+                        <option value="Singapura">Singapura</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Paris">Paris</option>
+                        <option value="Dubai">Dubai</option>
+                        <option value="Sydney">Sydney</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Algorithm</label>
+                    <select id="algo">
+                        <option value="BFS">BFS (Shortest Path)</option>
+                        <option value="DFS">DFS (Explore Path)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="searchBtn" class="search-btn">
+                <span id="btnText">Find Route</span>
+                <span id="btnLoading" class="loading">Loading...</span>
+            </button>
+
+            <div id="result" class="result" style="display: none;">
+                <h3>Route Found</h3>
+                <div id="routeResult" class="route-result">Loading route...</div>
+                <div class="meta-info">
+                    <div class="meta-item">
+                        <span class="meta-label">Algorithm Used:</span>
+                        <span id="algoInfo" class="meta-value">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">City Status:</span>
+                        <span id="cityStatus" class="meta-value">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                <h3>⚠️ Error</h3>
+                <p id="errorText">Something went wrong</p>
+            </div>
+
+            <div class="actions">
+                <button id="citiesBtn" class="action-btn">
+                    <span>📍 View All Cities</span>
+                </button>
+                <button id="bigOBtn" class="action-btn">
+                    <span>📊 View Big-O Analysis</span>
+                </button>
+                <button id="searchCityBtn" class="action-btn">
+                    <span>🔍 Search City</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="citiesModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📍 All Available Cities</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="citiesList">
+                        Loading cities...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="searchCityModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🔍 Search City</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="citySearchInput" placeholder="Enter city name...">
+                    <button id="citySearchBtn">Search</button>
+                    <div id="searchCityResult"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bigOModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📊 Big-O Notation Analysis</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="bigOResult">
+                        Loading Big-O analysis...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 BackpackAI - AI Travel Planner</p>
+        <p>Built with ❤️ using Graph Algorithms</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
